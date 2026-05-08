@@ -1,0 +1,28 @@
+services:
+  reverse-nginx:
+    image: "nginx:latest"
+    container_name: reverse-nginx
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./config/conf.d:/etc/nginx/conf.d
+      # Add folder with dynamic configurations yml
+      - "./services:/var/www"
+      # Add SSL certificate to traefik container
+      - "./certs:/etc/certs"
+    networks:
+      - nginx-network
+
+  whoami:
+    image: traefik/whoami
+    container_name: whoami
+    restart: always
+    networks:
+      - nginx-network
+
+networks:
+  nginx-network:
+    external: true
+    name: nginx-network
